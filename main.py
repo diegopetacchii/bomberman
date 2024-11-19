@@ -37,7 +37,8 @@ def spawn_door(arena):
     for actor in arena.actors():
         if isinstance(actor, WallDistr):
             wx, wy = actor.pos()
-            arena.spawn(Door((wx, wy + 16)))
+            arena.spawn(Door((wx, wy)))
+            print(f"Porta creata alla posizione: {(wx, wy)}") 
             break
  
 
@@ -49,17 +50,18 @@ def tick():
 
     for a in arena.actors():
         if isinstance(a, Wall):
-            g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())  
+            g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
         elif isinstance(a, WallDistr):
-            g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())  
+            g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
         elif isinstance(a, Bomberman):
             g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
         elif isinstance(a, Ballom):
             g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
         elif isinstance(a, Bomb):
-            g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())  
-        elif isinstance(a, Door):
             g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
+        elif isinstance(a, Door):
+            if not a.is_hidden():  # Disegna la porta solo se non è nascosta
+                g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
 
     for a in arena.actors():
         if isinstance(a, (Ballom, Bomberman, Bomb, Fire)):

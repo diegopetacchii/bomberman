@@ -6,12 +6,11 @@ from wall import Wall
 from wallDistr import WallDistr
 from bomb import Bomb
 from door import Door
+from ballom import Ballom
+from fire import Fire
 
 
-countU = 0
-countD = 0
-countL = 0
-countR = 0
+
 
 class Bomberman(Actor):
     def __init__(self, pos):
@@ -20,80 +19,89 @@ class Bomberman(Actor):
         self._spriteW, self._spriteH = 16, 16
         self._dx, self._dy = 0, 0
         self._speed = 2
+        self._countU, self._countD, self._countL, self._countR = 0, 0, 0, 0
+        self._timerDeath=70
+        self._death=False
 
     def move(self, arena: Arena):
-        global countU, countD, countL, countR
-         
-        keys = arena.current_keys()
-        if "ArrowUp" in keys:
-            if countU==1:
-                self._spriteW, self._spriteH=48, 16
-            if countU==2:
-                self._spriteW, self._spriteH=64, 16
-            if countU==3:
-                self._spriteW, self._spriteH=80, 16  
-                countU=0
-            countU=countU+1    
-            self._dy -= self._speed
-            self._dx = 0
-             
-        elif "ArrowDown" in keys:
-            if countD==1:
-                self._spriteW, self._spriteH=48, 0
-            if countD==2:
-                self._spriteW, self._spriteH=64, 0
-            if countD==3:
-                self._spriteW, self._spriteH=80, 0  
-                countD=0
-            countD=countD+1
-            self._dy += self._speed
-            self._dx = 0
-           
-        elif "ArrowLeft" in keys :
-            if countL==1:
-                self._spriteW, self._spriteH=0, 0
-            if countL==2:
-                self._spriteW, self._spriteH=16, 0
-            if countL==3:
-                self._spriteW, self._spriteH=32, 0  
-                countL=0
-            countL=countL+1
-            self._dx -= self._speed
-            self._dy = 0
-        elif "ArrowRight" in keys:
-            if countR==1:
-                self._spriteW, self._spriteH=0, 16
-            if countR==2:
-                self._spriteW, self._spriteH=16, 16
-            if countR==3:
-                self._spriteW, self._spriteH=32, 16  
-                countR=0
-            countR=countR+1
-            self._dx += self._speed
-            self._dy = 0
-        if "Spacebar" in keys:
-            already_bomb = False
-            for a in arena.actors():
-                if isinstance(a, Bomb):
-                    already_bomb = True
-            if already_bomb == False:
-                arena.spawn(Bomb((self._x, self._y)))
-                
-           
-        if self.check_collision(self._x + self._dx, self._y + self._dy, arena) == False:
-            self._x += self._dx
-            self._y += self._dy
-        else:
-            self._x -= self._dx
-            self._y -= self._dy
+        
+        if self._death==True:
+            self.deathAnimation(arena)
 
-        self._dx=0
-        self._dy=0
-       
-        if self.check_door_collision(arena):
-            print("Camilla De Pandis SMASH")
-   
+        else:
+            keys = arena.current_keys()
+            if "ArrowUp" in keys:
+                if self._countU==1:
+                    self._spriteW, self._spriteH=48, 16
+                if self._countU==2:
+                    self._spriteW, self._spriteH=64, 16
+                if self._countU==3:
+                    self._spriteW, self._spriteH=80, 16  
+                    self._countU=0
+                self._countU=self._countU+1    
+                self._dy -= self._speed
+                self._dx = 0
+                
+            elif "ArrowDown" in keys:
+                if self._countD==1:
+                    self._spriteW, self._spriteH=48, 0
+                if self._countD==2:
+                    self._spriteW, self._spriteH=64, 0
+                if self._countD==3:
+                    self._spriteW, self._spriteH=80, 0  
+                    self._countD=0
+                self._countD=self._countD+1
+                self._dy += self._speed
+                self._dx = 0
+            
+            elif "ArrowLeft" in keys :
+                if self._countL==1:
+                    self._spriteW, self._spriteH=0, 0
+                if self._countL==2:
+                    self._spriteW, self._spriteH=16, 0
+                if self._countL==3:
+                    self._spriteW, self._spriteH=32, 0  
+                    self._countL=0
+                self._countL=self._countL+1
+                self._dx -= self._speed
+                self._dy = 0
+            elif "ArrowRight" in keys:
+                if self._countR==1:
+                    self._spriteW, self._spriteH=0, 16
+                if self._countR==2:
+                    self._spriteW, self._spriteH=16, 16
+                if self._countR==3:
+                    self._spriteW, self._spriteH=32, 16  
+                    self._countR=0
+                self._countR=self._countR+1
+                self._dx += self._speed
+                self._dy = 0
+            if "Spacebar" in keys:
+                already_bomb = False
+                for a in arena.actors():
+                    if isinstance(a, Bomb):
+                        already_bomb = True
+                if already_bomb == False:
+                    arena.spawn(Bomb((self._x, self._y)))
+                    
+            
+            if self.check_collision(self._x + self._dx, self._y + self._dy, arena) == False:
+                self._x += self._dx
+                self._y += self._dy
+            else:
+                self._x -= self._dx
+                self._y -= self._dy
+
+            self._dx=0
+            self._dy=0
+
+            
+        
+            if self.check_door_collision(arena):
+                print("Camilla De Pandis SMASH")
+    
     def check_collision(self, next_x, next_y, arena: Arena) -> bool:
+        
         # Controlla le collisioni con tutti i muri (sia normali che distruttibili)
         for actor in arena.actors():
             if isinstance(actor, (Wall, WallDistr)):  # Controlla sia Wall che WallDistr
@@ -104,6 +112,24 @@ class Bomberman(Actor):
                 if (next_x < ax + aw and next_x + self._w > ax and
                     next_y < ay + ah and next_y + self._h > ay):
                     return True  # C'è una collisione
+            if isinstance(actor, (Ballom)):
+                ax, ay = actor.pos()
+                aw, ah = actor.size()
+                if (next_x < ax + aw and next_x + self._w > ax and
+                    next_y < ay + ah and next_y + self._h > ay):
+                    self._death=True
+
+            if isinstance(actor, (Fire)):
+                ax, ay = actor.pos()
+                aw, ah = actor.size()
+                
+                margin = 16  # Margine aggiunto per il fuoco
+
+                # Controllo esteso con margine
+                if (next_x - margin < ax + aw and next_x + self._w + margin > ax and
+                    next_y - margin < ay + ah and next_y + self._h + margin > ay):
+                    self._death = True
+
         return False  
        
     def check_door_collision(self, arena: Arena) -> bool:
@@ -128,3 +154,21 @@ class Bomberman(Actor):
     def sprite(self) -> Point:
         return self._spriteW, self._spriteH
 
+    def deathAnimation(self, arena: Arena):
+        if self._timerDeath <=70 and self._timerDeath >=60:
+            self._spriteW, self._spriteH = 0, 32
+        if self._timerDeath <=59 and self._timerDeath >=50:
+            self._spriteW, self._spriteH = 16, 32
+        if self._timerDeath <=49 and self._timerDeath >=40:
+            self._spriteW, self._spriteH = 32, 32
+        if self._timerDeath <=39 and self._timerDeath >=30:
+            self._spriteW, self._spriteH = 48, 32
+        if self._timerDeath <=29 and self._timerDeath >=20:
+            self._spriteW, self._spriteH = 64, 32
+        if self._timerDeath <=19 and self._timerDeath >=10:
+            self._spriteW, self._spriteH = 80, 32
+        if self._timerDeath <=9 and self._timerDeath >0:
+            self._spriteW, self._spriteH = 96, 32
+        if self._timerDeath == 0:
+            arena.kill(self) 
+        self._timerDeath -= 1

@@ -33,33 +33,33 @@ class Fire(Actor):
    
     def sprkles(self, xpos, ypos, spriteW, spriteH, arena):
         g2d.draw_image("bomberman.png", self.pos(), (spriteW, spriteH), self.size())
-        for i in range(1, 3):
-            x = xpos + i * 16
+        for i in range(2, 3):
+            x = xpos + self._w
             if self.destroy_wall(x, self._y, arena):
                 break
             else:
-                g2d.draw_image("bomberman.png", (x, ypos), (spriteW + (16 * i), spriteH), self.size())
+                g2d.draw_image("bomberman.png", (x, ypos), (spriteW + (self._w * i), spriteH), self.size())
 
-        for i in range(1, 3):
-            x = xpos - i * 16
+        for i in range(2, 3):
+            x = xpos - self._w
             if self.destroy_wall(x, self._y, arena):
                 break
             else:
-                g2d.draw_image("bomberman.png", (x, ypos), (spriteW - (16 * i), spriteH), self.size())
+                g2d.draw_image("bomberman.png", (x, ypos), (spriteW - (self._w * i), spriteH), self.size())
 
-        for i in range(1, 3):
-            y = ypos + i * 16
+        for i in range(2, 3):
+            y = ypos + self._w
             if self.destroy_wall(self._x, y, arena):
                 break
             else:
-                g2d.draw_image("bomberman.png", (xpos, y), (spriteW, spriteH + (16 * i)), self.size())
+                g2d.draw_image("bomberman.png", (xpos, y), (spriteW, spriteH + (self._w * i)), self.size())
 
-        for i in range(1, 3):
-            y = ypos - i * 16
+        for i in range(2, 3):
+            y = ypos - self._w
             if self.destroy_wall(self._x, y, arena):
                 break
             else:
-                g2d.draw_image("bomberman.png", (xpos, y), (spriteW, spriteH - (16 * i)), self.size())
+                g2d.draw_image("bomberman.png", (xpos, y), (spriteW, spriteH - (self._w * i)), self.size())
 
 
     def destroy_wall(self, next_x, next_y, arena: Arena) -> bool:

@@ -10,6 +10,7 @@ class Door(Actor):
         self._x, self._y = pos
         self._w, self._h = 16, 16
         self._spriteW, self._spriteH = 176, 48
+        self._hidden = True
 
     def move(self, arena: Arena):
         pass
@@ -23,3 +24,8 @@ class Door(Actor):
     def sprite(self) -> Point:
         return self._spriteW, self._spriteH
 
+    def is_hidden(self) -> bool:
+        return self._hidden
+
+    def reveal(self):
+        self._hidden = False 
