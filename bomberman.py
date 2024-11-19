@@ -124,10 +124,14 @@ class Bomberman(Actor):
                 aw, ah = actor.size()
                 
                 margin = 16  # Margine aggiunto per il fuoco
+                if (next_x < ax + aw and next_x + self._w > ax and
+                    next_y < ay + ah and next_y + self._h > ay):
+                    self._death=True
 
                 # Controllo esteso con margine
-                if (next_x - margin < ax + aw and next_x + self._w + margin > ax and
+                if (next_x - margin < ax + aw and next_x + self._w + margin > ax or
                     next_y - margin < ay + ah and next_y + self._h + margin > ay):
+                    
                     self._death = True
 
         return False  

@@ -4,7 +4,7 @@ from random import choice, randrange, randint
 from actor import Actor, Arena, Point
 from wall import Wall
 from wallDistr import WallDistr
-
+from door import Door
 
 class Fire(Actor):
     def __init__(self, pos):
@@ -30,36 +30,37 @@ class Fire(Actor):
         if self._timerFire==0:
             arena.kill(self)
    
-   
+    
+
     def sprkles(self, xpos, ypos, spriteW, spriteH, arena):
-        g2d.draw_image("bomberman.png", self.pos(), (spriteW, spriteH), self.size())
-        for i in range(2, 3):
-            x = xpos + self._w
-            if self.destroy_wall(x, self._y, arena):
-                break
-            else:
-                g2d.draw_image("bomberman.png", (x, ypos), (spriteW + (self._w * i), spriteH), self.size())
+            g2d.draw_image("bomberman.png", self.pos(), (spriteW, spriteH), self.size())
+            for i in range(2, 3):
+                x = xpos + self._w
+                if self.destroy_wall(x, self._y, arena):
+                    break
+                else:
+                    g2d.draw_image("bomberman.png", (x, ypos), (spriteW + (self._w * i), spriteH), self.size())
 
-        for i in range(2, 3):
-            x = xpos - self._w
-            if self.destroy_wall(x, self._y, arena):
-                break
-            else:
-                g2d.draw_image("bomberman.png", (x, ypos), (spriteW - (self._w * i), spriteH), self.size())
+            for i in range(2, 3):
+                x = xpos - self._w
+                if self.destroy_wall(x, self._y, arena):
+                    break
+                else:
+                    g2d.draw_image("bomberman.png", (x, ypos), (spriteW - (self._w * i), spriteH), self.size())
 
-        for i in range(2, 3):
-            y = ypos + self._w
-            if self.destroy_wall(self._x, y, arena):
-                break
-            else:
-                g2d.draw_image("bomberman.png", (xpos, y), (spriteW, spriteH + (self._w * i)), self.size())
+            for i in range(2, 3):
+                y = ypos + self._w
+                if self.destroy_wall(self._x, y, arena):
+                    break
+                else:
+                    g2d.draw_image("bomberman.png", (xpos, y), (spriteW, spriteH + (self._w * i)), self.size())
 
-        for i in range(2, 3):
-            y = ypos - self._w
-            if self.destroy_wall(self._x, y, arena):
-                break
-            else:
-                g2d.draw_image("bomberman.png", (xpos, y), (spriteW, spriteH - (self._w * i)), self.size())
+            for i in range(2, 3):
+                y = ypos - self._w
+                if self.destroy_wall(self._x, y, arena):
+                    break
+                else:
+                    g2d.draw_image("bomberman.png", (xpos, y), (spriteW, spriteH - (self._w * i)), self.size())
 
 
     def destroy_wall(self, next_x, next_y, arena: Arena) -> bool:
@@ -69,9 +70,12 @@ class Fire(Actor):
                 aw, ah = actor.size()
                 if (next_x < ax + aw and next_x + self._w > ax and
                     next_y < ay + ah and next_y + self._h > ay):
-
-                    
                     actor.animation(arena)
+
+                    for other_actor in arena.actors():
+                        if isinstance(other_actor, Door) and other_actor.pos() == (ax, ay):
+                            other_actor.reveal()
+
                     return True
 
             if isinstance(actor, Wall):
@@ -82,6 +86,7 @@ class Fire(Actor):
                     return True
 
         return False
+
 
 
     def check_collision(self, next_x, next_y, arena: Arena) -> bool:
