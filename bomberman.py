@@ -10,8 +10,6 @@ from ballom import Ballom
 from fire import Fire
 
 
-
-
 class Bomberman(Actor):
     def __init__(self, pos):
         self._x, self._y = pos
@@ -104,14 +102,14 @@ class Bomberman(Actor):
         
         # Controlla le collisioni con tutti i muri (sia normali che distruttibili)
         for actor in arena.actors():
-            if isinstance(actor, (Wall, WallDistr)):  # Controlla sia Wall che WallDistr
+            if isinstance(actor, (Wall, WallDistr)):  
                 ax, ay = actor.pos()
                 aw, ah = actor.size()
 
-                # Se la nuova posizione del personaggio collide con un muro, restituisci True
                 if (next_x < ax + aw and next_x + self._w > ax and
                     next_y < ay + ah and next_y + self._h > ay):
                     return True  # C'è una collisione
+                
             if isinstance(actor, (Ballom)):
                 ax, ay = actor.pos()
                 aw, ah = actor.size()
@@ -119,21 +117,27 @@ class Bomberman(Actor):
                     next_y < ay + ah and next_y + self._h > ay):
                     self._death=True
 
-            if isinstance(actor, (Fire)):
+            if isinstance(actor, Fire):
                 ax, ay = actor.pos()
                 aw, ah = actor.size()
-                
+
                 margin = 16  # Margine aggiunto per il fuoco
+                # Collisione normale con il fuoco
                 if (next_x < ax + aw and next_x + self._w > ax and
                     next_y < ay + ah and next_y + self._h > ay):
-                    self._death=True
-
-                # Controllo esteso con margine
-                if (next_x - margin < ax + aw and next_x + self._w + margin > ax or
-                    next_y - margin < ay + ah and next_y + self._h + margin > ay):
-                    
                     self._death = True
 
+                # Collisione con la zona estesa attorno al fuoco
+                extended_ax = ax - margin
+                extended_ay = ay - margin
+                extended_aw = aw + 2 * margin
+                extended_ah = ah + 2 * margin
+
+                if (next_x < extended_ax + extended_aw and next_x + self._w > extended_ax and
+                    next_y < extended_ay + extended_ah and next_y + self._h > extended_ay):
+                    self._death = True
+
+        #nessuna collisione 
         return False  
        
     def check_door_collision(self, arena: Arena) -> bool:

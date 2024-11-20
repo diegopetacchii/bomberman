@@ -10,9 +10,12 @@ class WallDistr(Actor):
         self._w, self._h = 16, 16  # Dimensione del blocco muro
         self._spriteW, self._spriteH=64, 48
         self._timerWall=50
+        self._destroyed=False
         
 
     def move(self, arena: Arena):
+        if self._destroyed==True:
+            self.animation(arena)
         pass  # Il muro non si muove
 
     def pos(self) -> Point:

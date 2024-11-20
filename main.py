@@ -1,4 +1,5 @@
-import random
+import random, time
+import g2d
 from random import choice, randrange, randint
 from actor import Actor, Arena, Point
 from wall import Wall
@@ -10,14 +11,23 @@ from door import Door
 from bomberman import Bomberman
 
 
+AX, AY= 463, 366
+AX2, AY2= 463, 336
+delta_pos=30
+timer=200
+count_frame=0
+fps=30
+
 def walls_distr(arena, num_walls):
-    arena_w, arena_h = arena.size()
+    global AX2, AY2, delta_pos
+    arena_w, arena_h = AX2, AY2
     block_size = 16
     added_walls = 0
+    
 
     while added_walls < num_walls:
         x = random.randrange(block_size, arena_w - block_size, block_size)
-        y = random.randrange(block_size, arena_h - block_size, block_size)
+        y = random.randrange(block_size, arena_h - block_size, block_size)+delta_pos
 
         collision = False
         for actor in arena.actors():
@@ -42,11 +52,27 @@ def spawn_door(arena):
             break
  
 
-def tick():
+def tick(arena:Arena):
+    global AX2, AY2, delta_pos, timer, count_frame, fps
     arena_width, arena_height = arena.size()
+    
 
     g2d.set_color((60, 123, 1))
     g2d.draw_rect((0, 0), (arena_width, arena_height))
+
+    g2d.set_color((105, 105, 105))
+    g2d.draw_rect((0, 0), (arena_width, delta_pos))
+
+    count_frame=count_frame+1
+    if count_frame==fps:
+        count_frame=0
+        timer=timer-1
+    g2d.set_color((255, 105, 105))
+    g2d.draw_text(f"Time: {timer}", (50, 15), 15)
+    if timer==195:
+        game_over(arena)
+        return
+        
 
     for a in arena.actors():
         if isinstance(a, Wall):
@@ -64,48 +90,75 @@ def tick():
                 g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
 
     for a in arena.actors():
-        if isinstance(a, (Ballom, Bomberman, Bomb, Fire)):
+        if isinstance(a, (Ballom, Bomberman, Bomb, Fire, WallDistr)):
             a.move(arena)
 
     arena.tick(g2d.current_keys())
 
-def add_walls(arena):
-        arena_w, arena_h = arena.size()
-        block_size = 16  # Dimensione del muro
 
-        # Aggiungi muri ai bordi superiori e inferiori
-        for x in range(0, arena_w, block_size):
-            arena.spawn(Wall((x, 0)))
-            arena.spawn(Wall((x, arena_h - block_size)))
-
-        # Aggiungi muri ai bordi laterali
-        for y in range(0, arena_h, block_size):
-            arena.spawn(Wall((0, y)))
-            arena.spawn(Wall((arena_w - block_size, y)))
-
-        # muri in mezzo
-        for x in range(block_size * 2, arena_w - block_size, block_size * 2):
-            for y in range(block_size * 2, arena_h - block_size, block_size * 2):
-                if (x // block_size) % 2 == 0 or (y // block_size) % 2 == 0:
-                    arena.spawn(Wall((x, y)))
-
-        walls_distr(arena, 80)
+def game_over(arena:Arena):
+    arena_width, arena_height = arena.size()
+    g2d.draw_text("GAME OVER", (arena_width//2-50, arena_height//2), 30)
+    main()
     
-        spawn_door(arena)
+
+
+def add_walls(arena):
+    global AX2, AY2, delta_pos
+    arena_w, arena_h = AX2, AY2
+    block_size = 16  # Dimensione del muro
+    
+
+    # Aggiungi muri ai bordi superiori e inferiori
+    for x in range(0, arena_w, block_size):
+        arena.spawn(Wall((x, delta_pos)))
+        arena.spawn(Wall((x, delta_pos+arena_h - block_size)))
+
+    # Aggiungi muri ai bordi laterali
+    for y in range(0, arena_h, block_size):
+        arena.spawn(Wall((0, y+delta_pos)))
+        arena.spawn(Wall((arena_w - block_size, y+delta_pos)))
+
+    # muri in mezzo
+    for x in range(block_size * 2, arena_w - block_size, block_size * 2):
+        for y in range(block_size * 2, arena_h - block_size, block_size * 2):
+            if (x // block_size) % 2 == 0 or (y // block_size) % 2 == 0:
+                arena.spawn(Wall((x, y+delta_pos)))
+
+    walls_distr(arena, 80)
+    
+    spawn_door(arena)
+
+def home_screen():
+    global g2d, AX, AY
+    arena = Arena((AX, AY))
+    g2d.init_canvas((AX, AY))
+    
+    ciclo = True
+    while ciclo:
+        # Disegna la schermata iniziale
+        print("ciao")
+        g2d.clear_canvas()
+        g2d.draw_text("Press Enter to Start", (AX // 2 - 100, AY // 2), 24)  # Centra il testo
+        g2d.update_canvas()
+
+        time.sleep(1) 
+
+        # Controlla i tasti premuti
+        keys = g2d.current_keys()
+        if "Enter" in keys:
+            print("Enter premuto")
+            arena.spawn(Ballom((16, 128)))
+            arena.spawn(Bomberman((16, 288)))
+            add_walls(arena)
+            g2d.main_loop(tick)
+            ciclo = False  # Esce dal ciclo
+
+             
+
 
 def main():
-    global g2d, arena
-    import g2d
+    home_screen()
 
-    arena = Arena((464, 336))
-    arena.spawn(Ballom((16, 16)))
-    arena.spawn(Bomberman((16, 160)))
-
-    add_walls(arena)  # Aggiungi i muri ai bordi e nelle altre posizioni
-
-    g2d.init_canvas(arena.size())
-    g2d.main_loop(tick)  # Avvia il ciclo principale e assicurati che il canvas si aggiorni
-
-   
 if __name__ == "__main__":
     main()

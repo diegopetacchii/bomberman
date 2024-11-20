@@ -70,7 +70,7 @@ class Fire(Actor):
                 aw, ah = actor.size()
                 if (next_x < ax + aw and next_x + self._w > ax and
                     next_y < ay + ah and next_y + self._h > ay):
-                    actor.animation(arena)
+                    actor._destroyed = True
 
                     for other_actor in arena.actors():
                         if isinstance(other_actor, Door) and other_actor.pos() == (ax, ay):
