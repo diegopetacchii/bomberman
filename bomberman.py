@@ -20,8 +20,95 @@ class Bomberman(Actor):
         self._countU, self._countD, self._countL, self._countR = 0, 0, 0, 0
         self._timerDeath=70
         self._death=False
+        
+    def is_alive(self):
+        return not(self._death)
+
 
     def move(self, arena: Arena):
+        if self._death:
+            self.deathAnimation(arena)
+        else:
+            keys = arena.current_keys()
+            
+            if "ArrowUp" in keys:
+                if self._countU==1:
+                    self._spriteW, self._spriteH=48, 16
+                if self._countU==2:
+                    self._spriteW, self._spriteH=64, 16
+                if self._countU==3:
+                    self._spriteW, self._spriteH=80, 16  
+                    self._countU=0
+                self._countU=self._countU+1    
+                self._dy -= self._speed
+                self._dx = 0
+            elif "ArrowDown" in keys:
+                if self._countD==1:
+                    self._spriteW, self._spriteH=48, 0
+                if self._countD==2:
+                    self._spriteW, self._spriteH=64, 0
+                if self._countD==3:
+                    self._spriteW, self._spriteH=80, 0  
+                    self._countD=0
+                self._countD=self._countD+1
+                self._dy += self._speed
+                self._dx = 0
+            elif "ArrowLeft" in keys:
+                if self._countL==1:
+                    self._spriteW, self._spriteH=0, 0
+                if self._countL==2:
+                    self._spriteW, self._spriteH=16, 0
+                if self._countL==3:
+                    self._spriteW, self._spriteH=32, 0  
+                    self._countL=0
+                self._countL=self._countL+1
+                self._dx -= self._speed
+                self._dy = 0
+                self.update_sprite("left")
+            elif "ArrowRight" in keys:
+                if self._countR==1:
+                    self._spriteW, self._spriteH=0, 16
+                if self._countR==2:
+                    self._spriteW, self._spriteH=16, 16
+                if self._countR==3:
+                    self._spriteW, self._spriteH=32, 16  
+                    self._countR=0
+                self._countR=self._countR+1
+                self._dx += self._speed
+                self._dy = 0
+
+            if "Spacebar" in keys:
+                if not any(isinstance(a, Bomb) for a in arena.actors()):
+                    arena.spawn(Bomb((self._x, self._y)))
+
+            # Controllo collisioni prima di aggiornare la posizione
+            if not self.check_collision(self._x + self._dx, self._y + self._dy, arena):
+                self._x += self._dx
+                self._y += self._dy
+
+            # Reset dx e dy dopo il movimento
+            self._dx = 0
+            self._dy = 0
+
+            # Check door collision
+        if self.check_door_collision(arena):
+            print("Camilla De Pandis SMASH")
+
+    def update_sprite(self, direction):
+        if direction == "up":
+            self._countU = (self._countU + 1) % 4
+            self._spriteW, self._spriteH = 48 + 16 * self._countU, 16
+        elif direction == "down":
+            self._countD = (self._countD + 1) % 4
+            self._spriteW, self._spriteH = 48 + 16 * self._countD, 0
+        elif direction == "left":
+            self._countL = (self._countL + 1) % 4
+            self._spriteW, self._spriteH = 0 + 16 * self._countL, 0
+        elif direction == "right":
+            self._countR = (self._countR + 1) % 4
+            self._spriteW, self._spriteH = 0 + 16 * self._countR, 16
+
+    """def move(self, arena: Arena):
         
         if self._death==True:
             self.deathAnimation(arena)
@@ -96,7 +183,7 @@ class Bomberman(Actor):
             
         
             if self.check_door_collision(arena):
-                print("Camilla De Pandis SMASH")
+                print("Camilla De Pandis SMASH")"""
     
     def check_collision(self, next_x, next_y, arena: Arena) -> bool:
         
