@@ -89,16 +89,17 @@ class Ballom(Actor):
             self._spriteW, self._spriteH = 144, 240
         if self._timerDeath <=9 and self._timerDeath >=0:
             self._spriteW, self._spriteH = 160, 240
-        if self._timerDeath == 0:
-            self._spriteW=128
-            self._spriteH=366
-            print("ciao")
+        if self._timerDeath <= 0:
+            self._spriteW=112
+            self._spriteH=336
+            self._w=16
+            self._h=8
             if self._timerPoint==0:
                 arena.kill(self)
             else:
-                self._timerPoint-=self._timerPoint 
-        if self._timerDeath!=0:
-            self._timerDeath -= 1
+                self._timerPoint -=1 
+        
+        self._timerDeath -= 1
 
     def check_collision(self, next_x, next_y, arena: Arena) -> bool:
         # Controlla le collisioni con tutti i muri (sia normali che distruttibili)
