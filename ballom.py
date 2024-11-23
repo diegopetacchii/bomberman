@@ -17,10 +17,12 @@ class Ballom(Actor):
         self._death=False
         self._timerDeath=50
         self._timerPoint=30
+        self._point=0
 
     def move(self, arena: Arena):
         
         if self._death==True:
+            self._poit=100
             self.deathAnimation(arena)
 
         else:
@@ -94,6 +96,7 @@ class Ballom(Actor):
             self._spriteH=336
             self._w=16
             self._h=8
+            
             if self._timerPoint==0:
                 arena.kill(self)
             else:

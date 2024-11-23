@@ -18,14 +18,14 @@ timer=200
 count_frame=0
 fps=30
 left =3
-point=0
+points=0
 
 def walls_distr(arena, num_walls):
     global AX2, AY2, delta_pos
     arena_w, arena_h = AX2, AY2
     block_size = 16
     added_walls = 0
-    
+   
 
     while added_walls < num_walls:
         x = random.randrange(block_size, arena_w - block_size, block_size)
@@ -50,13 +50,12 @@ def spawn_door(arena):
         if isinstance(actor, WallDistr):
             wx, wy = actor.pos()
             arena.spawn(Door((wx, wy)))
-            print(f"Porta creata alla posizione: {(wx, wy)}") 
+            print(f"Porta creata alla posizione: {(wx, wy)}")
             break
  
 def tick():
-    global AX2, AY2, delta_pos, timer, count_frame, fps
+    global AX2, AY2, delta_pos, timer, count_frame, fps, points
     arena_width, arena_height = arena.size()
-    
 
     g2d.set_color((60, 123, 1))
     g2d.draw_rect((0, 0), (arena_width, arena_height))
@@ -64,72 +63,77 @@ def tick():
     g2d.set_color((105, 105, 105))
     g2d.draw_rect((0, 0), (arena_width, delta_pos))
 
-    count_frame=count_frame+1
-    if count_frame==fps:
-        count_frame=0
-        timer=timer-1
-    
+    count_frame += 1
+    if count_frame == fps:
+        count_frame = 0
+        timer -= 1
+
     g2d.set_color((255, 255, 255))
     g2d.draw_text(f"Time: {timer}", (50, 15), 15)
-    
-    g2d.set_color((255, 255, 255))
-    g2d.draw_text(f"Points: {point}", (200, 15), 15)
+    g2d.draw_text(f"Points: {points}", (200, 15), 15)
+    g2d.draw_text(f"Left: {left}", (400, 15), 15)
 
     for b in arena.actors():
         if isinstance(b, Bomberman):
-            bomberman = b 
-            break 
-    else: 
+            bomberman = b
+            break
+    else:
         bomberman = None
-    if bomberman.is_alive()==False or timer==0: 
-        game_over(arena) 
-        return
-    
-    g2d.set_color((255, 255, 255))
-    g2d.draw_text(f"Left: {left}", (400, 15), 15)    
+
     for a in arena.actors():
-        if isinstance(a, Wall):
+        if isinstance(a, (Wall, WallDistr)):
             g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
-        elif isinstance(a, WallDistr):
-            g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
-        elif isinstance(a, Bomberman):
-            g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
-        elif isinstance(a, Ballom):
-            g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
-        elif isinstance(a, Bomb):
-            g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
-        elif isinstance(a, Door):
-            if not a.is_hidden():  # Disegna la porta solo se non è nascosta
+
+    for a in arena.actors():
+        if isinstance(a, Door):
+            if not a.is_hidden():
                 g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
+    
+    for a in arena.actors():
+        if isinstance(a, Ballom):
+            points = a._point+points
 
     for a in arena.actors():
         if isinstance(a, (Ballom, Bomberman, Bomb, Fire, WallDistr)):
-            a.move(arena)
+            g2d.draw_image("bomberman.png", a.pos(), a.sprite(), a.size())
+
+    if bomberman and not bomberman.is_alive():
+        bomberman.deathAnimation(arena)
+
+        if bomberman._timerDeath <= 0:
+            game_over(arena)
+        return
+
+    if bomberman and bomberman.is_alive():
+        for a in arena.actors():
+            if isinstance(a, (Ballom, Bomberman, Bomb, Fire, WallDistr)):
+                a.move(arena)
 
     arena.tick(g2d.current_keys())
 
 
-def game_over(arena: Arena): 
-    global left 
-    left = left - 1
-    if left > 0: 
-        reset() 
-    else: 
-        left=3
-        arena_width, arena_height = arena.size() 
-        g2d.set_color((0, 0, 0)) 
-        g2d.draw_rect((0, 0), (arena_width, arena_height)) 
-        g2d.set_color((255, 0, 0)) 
-        g2d.draw_text("GAME OVER", (arena_width // 2, arena_height // 2), 50) 
-        g2d.update_canvas() 
+def game_over(arena: Arena):
+    global left
+    left -= 1
+    if left > 0:
+        reset()  # Resetta il gioco se ci sono vite rimanenti
+    else:
+        # Mostra la schermata di Game Over
+        left = 3
+        arena_width, arena_height = arena.size()
+        g2d.set_color((0, 0, 0))
+        g2d.draw_rect((0, 0), (arena_width, arena_height))
+        g2d.set_color((255, 0, 0))
+        g2d.draw_text("GAME OVER", (arena_width // 2, arena_height // 2), 50)
+        g2d.update_canvas()
         time.sleep(3)
         main()
 
-def reset(): 
-    global timer, point, count_frame 
+def reset():
+    global timer, point, count_frame
     timer = 200
-    point = 0 
-    count_frame = 0 
+    point = 0
+    count_frame = 0
     main()
 
 
@@ -137,7 +141,7 @@ def add_walls(arena):
     global AX2, AY2, delta_pos
     arena_w, arena_h = AX2, AY2
     block_size = 16  # Dimensione del muro
-    
+   
 
     # Aggiungi muri ai bordi superiori e inferiori
     for x in range(0, arena_w, block_size):
@@ -156,7 +160,7 @@ def add_walls(arena):
                 arena.spawn(Wall((x, y+delta_pos)))
 
     walls_distr(arena, 80)
-    
+   
     spawn_door(arena)
 
 def start():
@@ -179,7 +183,7 @@ def start():
 
     add_walls(arena)  # Aggiungi i muri ai bordi e nelle altre posizioni
 
-    
+   
     g2d.main_loop(tick)  # Avvia il ciclo principale e assicurati che il canvas si aggiorni
 
 
@@ -189,4 +193,3 @@ def main():
    
 if __name__ == "__main__":
     main()
-
