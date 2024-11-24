@@ -11,21 +11,21 @@ class Fire(Actor):
         self._x, self._y = pos
         self._w, self._h = 16, 16
         self._spriteW, self._spriteH = 32, 96
-        self._timerFire=60
+        self._timerFire=30
 
     def move(self, arena: Arena):
         self._timerFire=self._timerFire-1
 
-        if self._timerFire<=60 and self._timerFire>=45:
+        if self._timerFire<=30 and self._timerFire>=23:
             self.sprkles(self._x, self._y, self._spriteW, self._spriteH, arena)
 
-        if self._timerFire<=44 and self._timerFire>=30:
+        if self._timerFire<=22 and self._timerFire>=15:
             self.sprkles(self._x, self._y, self._spriteW+(16*5), self._spriteH, arena)
            
-        if self._timerFire<=29 and self._timerFire>=15:
+        if self._timerFire<=14 and self._timerFire>=7:
             self.sprkles(self._x, self._y, self._spriteW, self._spriteH+(16*5), arena)
 
-        if self._timerFire<=14 and self._timerFire>=1:
+        if self._timerFire<=6 and self._timerFire>=1:
             self.sprkles(self._x, self._y, self._spriteW+(16*5), self._spriteH+(16*5), arena)
         if self._timerFire==0:
             arena.kill(self)

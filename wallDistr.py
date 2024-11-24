@@ -9,7 +9,7 @@ class WallDistr(Actor):
         self._x, self._y = pos
         self._w, self._h = 16, 16  # Dimensione del blocco muro
         self._spriteW, self._spriteH=64, 48
-        self._timerWall=50
+        self._timerWall=30
         self._destroyed=False
         
 
@@ -31,13 +31,13 @@ class WallDistr(Actor):
         
         if self._timerWall > 0: 
             self._spriteW, self._spriteH = 144, 48 
-        if self._timerWall >= 10: 
+        if self._timerWall >= 7: 
             self._spriteW, self._spriteH = 128, 48 
-        if self._timerWall >= 20: 
+        if self._timerWall >= 13: 
             self._spriteW, self._spriteH = 112, 48 
-        if self._timerWall >= 30: 
+        if self._timerWall >= 19: 
             self._spriteW, self._spriteH = 96, 48 
-        if self._timerWall >= 40: 
+        if self._timerWall >= 25: 
             self._spriteW, self._spriteH = 80, 48 
         if self._timerWall == 0 and self in a._actors: 
             a.kill(self) 

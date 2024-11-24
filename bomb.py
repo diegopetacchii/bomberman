@@ -11,13 +11,19 @@ class Bomb(Actor):
         self._w, self._h = 16, 16
         self._spriteW, self._spriteH = 0, 48
         self._timerBomb=100
+        self._timer2=20
+
 
     def move(self, arena: Arena):
         self._timerBomb=self._timerBomb-1
-        if self._timerBomb==67:
+        if self._timerBomb==80:
             self._spriteW, self._spriteH=16, 48
-        if self._timerBomb==34:
+        if self._timerBomb==60:
             self._spriteW, self._spriteH=32, 48
+        if self._timerBomb==40:
+            self._spriteW, self._spriteH=16, 48
+        if self._timerBomb==20:
+            self._spriteW, self._spriteH=0, 48
         if self._timerBomb==0:
             arena.kill(self)
             arena.spawn(Fire((self._x, self._y)))
