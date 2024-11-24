@@ -5,7 +5,7 @@ from wall import Wall
 from wallDistr import WallDistr
 from fire import Fire
 
-class Ballom(Actor):
+class BallomBlue(Actor):
     def __init__(self, pos, sprite):
         self._x, self._y = pos
         self._speed = 1
@@ -29,6 +29,8 @@ class Ballom(Actor):
             if self._point == 0:  # Imposta i punti
                 self._point = 100
                 self._addPoint = False
+            self._spriteH=256
+            self._spriteW=96
             self.deathAnimation(arena)
 
         #movimento del ballom
@@ -64,8 +66,11 @@ class Ballom(Actor):
             else:
                 self._countDirection=0
                 directions=self.possible_directions(arena)
-                random.shuffle(directions)
-                self._dx, self._dy = directions[0]
+                if len(directions) == 0:
+                    self._dx, self._dy = 0,0
+                else:
+                    random.shuffle(directions)
+                    self._dx, self._dy = directions[0]
 
         
     #medoto per definire le possibili direzioni in cui puo andare il ballom
@@ -90,15 +95,15 @@ class Ballom(Actor):
     #animazione della morte del ballom
     def deathAnimation(self, arena: Arena):
         if self._timerDeath <=50 and self._timerDeath >=40:
-            self._spriteW, self._spriteH = 96, 240
+            self._spriteW, self._spriteH = 96, 256
         if self._timerDeath <=39 and self._timerDeath >=30:
-            self._spriteW, self._spriteH = 112, 240
+            self._spriteW, self._spriteH = 112, 288
         if self._timerDeath <=29 and self._timerDeath >=20:
-            self._spriteW, self._spriteH = 128, 240
+            self._spriteW, self._spriteH = 128, 288
         if self._timerDeath <=19 and self._timerDeath >=10:
-            self._spriteW, self._spriteH = 144, 240
+            self._spriteW, self._spriteH = 144, 288
         if self._timerDeath <=9 and self._timerDeath >=0:
-            self._spriteW, self._spriteH = 160, 240
+            self._spriteW, self._spriteH = 160, 288
         if self._timerDeath <= 0:
             self._spriteW=112
             self._spriteH=336

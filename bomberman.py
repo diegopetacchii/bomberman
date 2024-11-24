@@ -20,6 +20,7 @@ class Bomberman(Actor):
         self._countU, self._countD, self._countL, self._countR = 0, 0, 0, 0
         self._timerDeath=70
         self._death=False
+        self._victory=False
         
     def is_alive(self):
         return not(self._death)
@@ -93,6 +94,7 @@ class Bomberman(Actor):
             # Check door collision
         if self.check_door_collision(arena):
             print("Camilla De Pandis SMASH")
+            self._victory=True
 
    
     
@@ -178,3 +180,7 @@ class Bomberman(Actor):
         if self._timerDeath == 0:
             arena.kill(self) 
         self._timerDeath -= 1
+
+
+    def victory(self):
+        return self._victory
