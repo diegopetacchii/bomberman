@@ -13,7 +13,7 @@ from ballomBlue import BallomBlue
 
 #variabili gloali
 AX, AY= 463, 366
-AX2, AY2= 463, 336
+AX2, AY2= 464, 336
 delta_pos=30
 timer=200
 count_frame=0
@@ -51,8 +51,8 @@ def spawn_door(arena):
     for actor in arena.actors():
         if isinstance(actor, WallDistr):
             wx, wy = actor.pos()
+            print(f"porta: {wx, wy}"  )
             arena.spawn(Door((wx, wy)))
-            print(f"Porta creata alla posizione: {(wx, wy)}") 
             break
  
 def tick():
@@ -205,7 +205,7 @@ def start():
 
     #definizione dell arena
     arena = Arena((AX, AY))
-    g2d.init_canvas(arena.size())
+    g2d.init_canvas(arena.size(), 2)
 
     #immagine iniziale del gioco
     if left ==3:

@@ -15,7 +15,7 @@ class BallomBlue(Actor):
         self._timerAnimation=0
         self._countDirection=0
         self._death=False
-        self._timerDeath=50
+        self._timerDeath=65
         self._timerPoint=30
         self._point=0
         self._addPoint=True
@@ -94,7 +94,7 @@ class BallomBlue(Actor):
 
     #animazione della morte del ballom
     def deathAnimation(self, arena: Arena):
-        if self._timerDeath <=50 and self._timerDeath >=40:
+        if self._timerDeath <=65 and self._timerDeath >=40:
             self._spriteW, self._spriteH = 96, 256
         if self._timerDeath <=39 and self._timerDeath >=30:
             self._spriteW, self._spriteH = 112, 288

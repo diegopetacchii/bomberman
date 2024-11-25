@@ -7,6 +7,7 @@ from wallDistr import WallDistr
 from bomb import Bomb
 from door import Door
 from ballom import Ballom
+from ballomBlue import BallomBlue
 from fire import Fire
 
 
@@ -91,7 +92,7 @@ class Bomberman(Actor):
             self._dx = 0
             self._dy = 0
 
-        # Check door collision
+            # Check door collision
         if self.check_door_collision(arena):
             self._victory=True
 
@@ -110,6 +111,13 @@ class Bomberman(Actor):
                     return True  # C'è una collisione
                 
             if isinstance(actor, (Ballom)):
+                ax, ay = actor.pos()
+                aw, ah = actor.size()
+                if (next_x < ax + aw and next_x + self._w > ax and
+                    next_y < ay + ah and next_y + self._h > ay):
+                    self._death=True
+
+            if isinstance(actor, (BallomBlue)):
                 ax, ay = actor.pos()
                 aw, ah = actor.size()
                 if (next_x < ax + aw and next_x + self._w > ax and
@@ -161,7 +169,6 @@ class Bomberman(Actor):
     def sprite(self) -> Point:
         return self._spriteW, self._spriteH
 
-    #animazione immagini morte
     def deathAnimation(self, arena: Arena):
         if self._timerDeath <=70 and self._timerDeath >=60:
             self._spriteW, self._spriteH = 0, 32
@@ -181,6 +188,6 @@ class Bomberman(Actor):
             arena.kill(self) 
         self._timerDeath -= 1
 
-    #aggiornamento parametro vittoria
+
     def victory(self):
         return self._victory
